@@ -34,6 +34,25 @@ class ContactHelper {
           "$colunaEmail TEXT, $colunaTelefone TEXT, $colunaImg TEXT)");
     });
   }
+
+  Future<Contact> salvaContato(Contact contato) async {
+    Database dbContato = await db;
+    await dbContato.insert(tabelaContatos, contato.toMap());
+    return contato;
+  }
+
+  Future<Contact> obterContato(int id) async {
+    Database dbContato =  await db;
+    List<Map> contatos = await dbContato.query(tabelaContatos,
+    columns: [colunaID, colunaNome, colunaEmail, colunaTelefone, colunaImg],
+    where: "$colunaID =  ?",
+    whereArgs: [id]);
+    if (contatos.length > 0 ) {
+      return Contact.fromMap(contatos.first)
+    }else{
+      return null;
+    }
+  }
 }
 
 class Contact {
