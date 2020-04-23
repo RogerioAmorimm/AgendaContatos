@@ -20,6 +20,7 @@ class ContactHelper {
       return _db;
     } else {
       _db = await initDB();
+      return _db;
     }
   }
 
@@ -48,7 +49,7 @@ class ContactHelper {
     where: "$colunaID =  ?",
     whereArgs: [id]);
     if (contatos.length > 0 ) {
-      return Contact.fromMap(contatos.first)
+      return Contact.fromMap(contatos.first);
     }else{
       return null;
     }
@@ -72,7 +73,7 @@ class ContactHelper {
     List listaTodosContatos = await dbContato.rawQuery("SELECT * FROM $tabelaContatos");
     List<Contact> listaContatoConvertidos =  List();
 
-    listaTodosContatos.forEach((contato) => listaContatoConvertidos.add(contato));
+    listaTodosContatos.forEach((contato) => listaContatoConvertidos.add(Contact.fromMap(contato)));
     return listaContatoConvertidos;
   }
    Future<int> obtenhaQuantidadoElementos() async{
@@ -94,6 +95,8 @@ class Contact {
   String numeroTelefone;
   String img;
 
+  Contact();
+
   Contact.fromMap(Map map) {
     id = map[colunaID];
     nome = map[colunaNome];
@@ -111,11 +114,12 @@ class Contact {
     if (id != null) {
       mapContato[colunaID] = id;
     }
-
+    return mapContato;
+  }
     @override
     String toString() {
       return "Contato(id: $id, nome: $nome, email: $email, "
           "telefone: $numeroTelefone, img: $img)";
     }
-  }
 }
+
