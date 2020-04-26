@@ -4,11 +4,12 @@ import 'package:agenda_contatos/Helpers/contact_helper.dart';
 import 'package:agenda_contatos/Ui/contact_page.dart';
 import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
+import 'package:url_launcher/url_launcher.dart';
 
 //variaveis
 
 Widget cardContato(Contact contato, BuildContext contexto, ContactHelper helper,
-                  {Function setState}) {
+    {Function setState}) {
   return GestureDetector(
     child: Card(
       child: Padding(
@@ -19,6 +20,7 @@ Widget cardContato(Contact contato, BuildContext contexto, ContactHelper helper,
             Padding(
               padding: EdgeInsets.only(left: 10.0),
               child: Column(
+                crossAxisAlignment: CrossAxisAlignment.start,
                 children: <Widget>[
                   Text(
                     contato.nome ?? "",
@@ -40,9 +42,69 @@ Widget cardContato(Contact contato, BuildContext contexto, ContactHelper helper,
       ),
     ),
     onTap: () {
-      gatilhoContactPage(contexto, helper, contato: contato, setState: setState);
+      construtorOpcoes(contexto,
+          setState: setState,
+          widgets: [
+            Padding(
+                padding: EdgeInsets.all(10.0),
+                child: FlatButton(
+                    onPressed: () {
+                      launch("tel:${contato.numeroTelefone}");
+                      Navigator.pop(contexto);
+                    },
+                    child: Text(
+                      "Ligar",
+                      style: TextStyle(color: Colors.red, fontSize: 20.0),
+                    ))),
+            Padding(
+                padding: EdgeInsets.all(10.0),
+                child: FlatButton(
+                    onPressed: () {
+                      Navigator.pop(contexto);
+                      gatilhoContactPage(contexto, helper,
+                          contato: contato, setState: setState);
+                    },
+                    child: Text(
+                      "Editar",
+                      style: TextStyle(color: Colors.red, fontSize: 20.0),
+                    ))),
+            Padding(
+                padding: EdgeInsets.all(10.0),
+                child: FlatButton(
+                    onPressed: () {
+                      helper.deletarContato(contato.id);
+                      Navigator.pop(contexto);
+                      setState();
+                    },
+                    child: Text(
+                      "Excluir",
+                      style: TextStyle(color: Colors.red, fontSize: 20.0),
+                    ))),
+          ]);
     },
   );
+}
+
+// Nessa função precisa passar as opções para construção, em widgets
+void construtorOpcoes(
+    BuildContext contexto,
+    {Function setState, List<Widget> widgets}) {
+  showModalBottomSheet(
+      context: contexto,
+      builder: (contexto) {
+        return BottomSheet(
+          onClosing: () {},
+          builder: (contexto) {
+            return Container(
+              padding: EdgeInsets.all(10.0),
+              child: Column(
+                mainAxisSize: MainAxisSize.min,
+                children: widgets,
+              ),
+            );
+          },
+        );
+      });
 }
 
 Widget construtorImagenContato(String imagem, {double largura, double altura}) {
@@ -71,9 +133,9 @@ void gatilhoContactPage(BuildContext contexto, ContactHelper helper,
     if (contato != null)
       await helper.updateContato(retorno);
     else
-      await helper.salvaContato(retorno);   
+      await helper.salvaContato(retorno);
   }
-    if(setState != null) setState();
+  if (setState != null) setState();
 }
 
 TextStyle _textStyleElementosCard() =>

@@ -2,6 +2,7 @@ import 'package:agenda_contatos/Helpers/contact_helper.dart';
 import 'package:agenda_contatos/Ui/personal_widget.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
+import 'package:image_picker/image_picker.dart';
 
 class ContactPage extends StatefulWidget {
   final Contact contato;
@@ -59,9 +60,48 @@ class _ContactPageState extends State<ContactPage> {
             child: Column(
               children: <Widget>[
                 GestureDetector(
-                  child: construtorImagenContato(contatoEditavel.img,
-                      largura: 140.0, altura: 140.0),
-                ),
+                    child: construtorImagenContato(contatoEditavel.img,
+                        largura: 140.0, altura: 140.0),
+                    onTap: () {
+                      construtorOpcoes(context, widgets: [
+                        Padding(
+                            padding: EdgeInsets.all(10.0),
+                            child: FlatButton(
+                                child: Text("Galeria",
+                                    style: TextStyle(
+                                        color: Colors.red, fontSize: 20.0)),
+                                onPressed: () {
+                                  ImagePicker.pickImage(
+                                          source: ImageSource.gallery)
+                                      .then((imagem) {
+                                    if (imagem != null) {
+                                      setState(() {
+                                        contatoEditavel.img = imagem.path;
+                                      });
+                                    }
+                                    Navigator.pop(context);
+                                  });
+                                })),
+                        Padding(
+                            padding: EdgeInsets.all(10.0),
+                            child: FlatButton(
+                                child: Text("Camera",
+                                    style: TextStyle(
+                                        color: Colors.red, fontSize: 20.0)),
+                                onPressed: () {
+                                  ImagePicker.pickImage(
+                                          source: ImageSource.camera)
+                                      .then((imagem) {
+                                    if (imagem != null) {
+                                      setState(() {
+                                        contatoEditavel.img = imagem.path;
+                                      });
+                                    }
+                                    Navigator.pop(context);
+                                  });
+                                }))
+                      ]);
+                    }),
                 TextField(
                   controller: _nomeController,
                   decoration: InputDecoration(labelText: "Nome"),
